@@ -12,13 +12,13 @@ class MoneyAgent(mesa.Agent):
     def step(self):
         # 2. El agente sigue teniendo un unique_id, pero ahora Mesa lo genera solo
         print(f"Hi, I am agent {self.unique_id}")
-
         if self.wealth == 0:
             return
         other_agent = self.random.choice(self.model.agents)
         other_agent.wealth += 1
         self.wealth -= 1
         print("I donated 1 coin to " + str(other_agent.unique_id) + ".")
+
 
 class MoneyModel(mesa.Model):
     """A model with some number of agents."""
@@ -38,7 +38,28 @@ class MoneyModel(mesa.Model):
         # 5. Reemplazamos self.schedule.step() por el nuevo sistema de AgentSet
         self.agents.shuffle_do("step")
 
-
-# La ejecución queda exactamente igual
+'''
 empty_model = MoneyModel(10)
 empty_model.step()
+
+agent_wealths = [agent.wealth for agent in empty_model.agents]
+plt.hist(agent_wealths)
+plt.xlabel("Wealth")
+plt.ylabel("Number of Agents")
+plt.title("Wealth Distribution")
+plt.show()'''
+
+all_wealths = []
+# This runs the model 100 times and collects the wealth of all agents at the end of each run
+for j in range(100):
+    # Run the model
+    model = MoneyModel(10)
+    for i in range(100):
+        model.step()
+    
+    # Store the results
+    for agent in model.agents:
+        all_wealths.append(agent.wealth)
+
+plt.hist(all_wealths, bins=range(max(all_wealths) + 1), align='left')
+plt.show()

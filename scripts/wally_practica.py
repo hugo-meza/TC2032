@@ -64,13 +64,21 @@ class WalleReactivo(Agent):
         return moves
 
     def choose_action(self, moves):
-        """
-        Selecciona una acción de manera reactiva.
-        """
-        # TODO: aquí el alumno puede modificar la estrategia
-        if moves:
-            return random.choice(moves)
-        return None
+        """ Selecciona una acción de manera reactiva. """
+
+        # Priorizar movimientos que se acerquen a la meta
+        if not moves:
+            return None
+        
+        # Usar distancia Manhattan
+        def distance_to_goal(pos):
+            return abs(pos[0] - self.goal_x) + abs(pos[1] - self.goal_y)
+        
+        # Mandamos todos los moves de manera individual a la función de distancia y ordenamos por cercanía a la meta
+        moves.sort(key=distance_to_goal)
+
+        # Regresamos la mejor opción (la más cercana a la meta)
+        return moves[0]
 
     def move(self, new_position):
         """
@@ -171,6 +179,13 @@ model = GridModel(GRID_WIDTH, GRID_HEIGHT, GOAL_X, GOAL_Y)
 # Ejecutar simulación
 for _ in range(30):
     model.step()
+
+    if model.agent1.reached_goal():
+        break
+
+    if model.agent1.steps_taken >= model.agent1.max_steps:
+        break
+    
 
 # Guardar resultados (esto ya funciona automáticamente)
 model.save_log()
